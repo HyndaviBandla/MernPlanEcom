@@ -4,6 +4,8 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import store from "./store.js";
+import LoginScreen from "./screens/LoginScreen";
+
 import {
   Route,
   RouterProvider,
@@ -22,6 +24,7 @@ const router = createBrowserRouter(
        */}
       <Route path="/product/:id" element={<ProductScreen />} />
       <Route path="/cart" element={<CartScreen />} />
+      <Route path="/login" element={<LoginScreen />} />
     </Route>
   )
 );
