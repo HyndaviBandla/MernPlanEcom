@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import {
@@ -13,8 +14,11 @@ import {
   Form,
   ListGroupItem,
 } from "react-bootstrap";
-import { useDispatch } from "react-redux";
-import { useGetProductDetailsQuery } from "../slices/productsApiSlice.js";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  useGetProductDetailsQuery,
+  useCreateReviewMutation,
+} from "../slices/productsApiSlice.js";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader.js";
 import Message from "../components/Message.js";
@@ -25,13 +29,17 @@ const ProductScreen = () => {
   const dispatch = useDispatch(); //We  need dispatch because we can't call add to Cart directly.
   const navigate = useNavigate();
   const [qty, setQty] = useState(1);
-
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
   const {
     data: product,
     isLoading,
     error,
+    refetch,
   } = useGetProductDetailsQuery(productId);
-
+  const [createReview, { isLoading: loadingProductReview }] =
+    useCreateReviewMutation;
+  const userInfo = useSelector((state) => state.auth);
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
     navigate("/cart");
@@ -127,6 +135,22 @@ const ProductScreen = () => {
                 </ListGroup>
               </Card>
             </Col>
+          </Row>
+          <Row className="review">
+            <col md={6}>
+              <h2>Reviews</h2>
+              {product.reviews.length() === 0 && <Message>No reviews</Message>}
+              <ListGroup variant="flush">
+                {product.reviews.map((review) => (
+                  <ListGroup.Item key={review._id}>
+                    <strong>{review.name}</strong>
+                    <Rating value={review.rating} />
+                    <p>{review.createdAt.substring(0, 10)}</p>
+                    <p>{review.comment}</p>
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </col>
           </Row>
         </>
       )}
