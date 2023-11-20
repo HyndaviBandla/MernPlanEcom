@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Navbar, Nav, Container, NavDropdown, Badge } from "react-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import Rlogo from "../assets/Rlogo.jpeg";
@@ -7,6 +7,7 @@ import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
+import { resetCart } from "../slices/cartSlice";
 export const Header = () => {
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
@@ -20,6 +21,7 @@ export const Header = () => {
       // NOTE: here we need to reset cart state for when a user logs out so the next
       // user doesn't inherit the previous users cart and shipping
       // dispatch(resetCart());
+      dispatch(resetCart());
       navigate("/login");
     } catch (err) {
       console.error(err);
@@ -71,6 +73,19 @@ export const Header = () => {
                   <FaUser /> Sign In
                 </Nav.Link>
               </LinkContainer>
+            )}
+            {userInfo && userInfo.isAdmin && (
+              <NavDropdown title="Admin" id="adminmenu">
+                <LinkContainer to="admin/productList">
+                  <NavDropdown.Item>Products</NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="admin/userList">
+                  <NavDropdown.Item>Users</NavDropdown.Item>
+                </LinkContainer>
+                {/* <LinkContainer to="admin/orderList">
+                  <NavDropdown.Item>Orders</NavDropdown.Item>
+                </LinkContainer> */}
+              </NavDropdown>
             )}
           </Nav>
         </Navbar.Collapse>
